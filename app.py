@@ -27,9 +27,6 @@ def load_or_train_model():
     fake_url = "https://raw.githubusercontent.com/selva86/datasets/master/Fake.csv"
     true_url = "https://raw.githubusercontent.com/selva86/datasets/master/True.csv"
 
-fake_url = "https://raw.githubusercontent.com/selva86/datasets/master/Fake.csv"
-true_url = "https://raw.githubusercontent.com/selva86/datasets/master/True.csv"
-
 fake = pd.read_csv(fake_url)
 true = pd.read_csv(true_url)
 
@@ -77,4 +74,5 @@ if st.button("Check News"):
         else:
 
             st.error(f"🔴 FAKE NEWS\nConfidence: {confidence:.2f}%")
+
 
