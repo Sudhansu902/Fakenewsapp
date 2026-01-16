@@ -1,8 +1,6 @@
 import streamlit as st
-import joblib
-
-# Load model
 import os
+import joblib
 import pandas as pd
 import string
 import nltk
@@ -16,20 +14,29 @@ from nltk.corpus import stopwords
 
 MODEL_PATH = "model.pkl"
 
-# Check if model.pkl exists
-if os.path.exists(MODEL_PATH):
-    model = joblib.load(MODEL_PATH)
-else:
-    # Train model automatically
-    fake = pd.read_csv("dataset/Fake.csv")
-    true = pd.read_csv("dataset/True.csv")
+st.title("📰 Fake News Detection App")
+
+@st.cache_resource
+def load_or_train_model():
+    if os.path.exists(MODEL_PATH):
+        return joblib.load(MODEL_PATH)
+
+    st.info("Training model for first time... Please wait ⏳")
+
+    # Public dataset mirrors (small & accessible)
+    fake_url = "https://raw.githubusercontent.com/selva86/datasets/master/Fake.csv"
+    true_url = "https://raw.githubusercontent.com/selva86/datasets/master/True.csv"
+
+    fake = pd.read_csv(fake_url)
+    true = pd.read_csv(true_url)
+
     fake["label"] = 0
     true["label"] = 1
 
-    data = pd.concat([fake, true], axis=0).sample(frac=1).reset_index(drop=True)
+    data = pd.concat([fake, true]).sample(frac=1).reset_index(drop=True)
 
     def clean_text(text):
-        text = text.lower()
+        text = str(text).lower()
         text = "".join([c for c in text if c not in string.punctuation])
         return text
 
@@ -38,7 +45,7 @@ else:
     X = data["text"]
     y = data["label"]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
 
     model = Pipeline([
         ("tfidf", TfidfVectorizer(stop_words=stopwords.words("english"))),
@@ -46,11 +53,12 @@ else:
     ])
 
     model.fit(X_train, y_train)
-
-    # Save model for next time
     joblib.dump(model, MODEL_PATH)
 
-st.title("📰 Fake News Detection App")
+    return model
+
+
+model = load_or_train_model()
 
 news_text = st.text_area("Enter News Text:")
 
@@ -60,9 +68,8 @@ if st.button("Check News"):
     else:
         prediction = model.predict([news_text])[0]
         confidence = max(model.predict_proba([news_text])[0]) * 100
-        
+
         if prediction == 1:
             st.success(f"🟢 REAL NEWS\nConfidence: {confidence:.2f}%")
         else:
-
             st.error(f"🔴 FAKE NEWS\nConfidence: {confidence:.2f}%")
