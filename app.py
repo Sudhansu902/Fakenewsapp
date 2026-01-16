@@ -23,12 +23,12 @@ def load_or_train_model():
 
     st.info("Training model for first time... Please wait ⏳")
 
-    # Public dataset mirrors (small & accessible)
+    # Dataset URLs
     fake_url = "https://raw.githubusercontent.com/selva86/datasets/master/Fake.csv"
     true_url = "https://raw.githubusercontent.com/selva86/datasets/master/True.csv"
 
-fake = pd.read_csv(fake_url)
-true = pd.read_csv(true_url)
+    fake = pd.read_csv(fake_url)
+    true = pd.read_csv(true_url)
 
     fake["label"] = 0
     true["label"] = 1
@@ -45,7 +45,9 @@ true = pd.read_csv(true_url)
     X = data["text"]
     y = data["label"]
 
-    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, _, y_train, _ = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
 
     model = Pipeline([
         ("tfidf", TfidfVectorizer(stop_words=stopwords.words("english"))),
@@ -72,7 +74,4 @@ if st.button("Check News"):
         if prediction == 1:
             st.success(f"🟢 REAL NEWS\nConfidence: {confidence:.2f}%")
         else:
-
             st.error(f"🔴 FAKE NEWS\nConfidence: {confidence:.2f}%")
-
-
