@@ -24,11 +24,9 @@ def load_or_train_model():
     st.info("Training model for first time... Please wait ⏳")
 
     # ✅ Download dataset automatically (no GitHub upload needed)
-    fake_url = "https://raw.githubusercontent.com/selva86/datasets/master/Fake.csv"
-    true_url = "https://raw.githubusercontent.com/selva86/datasets/master/True.csv"
-
-    fake = pd.read_csv(fake_url)
-    true = pd.read_csv(true_url)
+   
+   fake = pd.read_csv("dataset/Fake.csv")
+   true = pd.read_csv("dataset/True.csv") 
 
     fake["label"] = 0
     true["label"] = 1
@@ -69,3 +67,4 @@ if st.button("Check News"):
             st.success("✅ This news looks REAL")
         else:
             st.error("❌ This news looks FAKE")
+
