@@ -3,6 +3,7 @@ import os
 import joblib
 import pandas as pd
 import nltk
+import string 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -69,3 +70,4 @@ if st.button("Check News"):
             st.success(f"🟢 REAL NEWS\nConfidence: {confidence:.2f}%")
         else:
             st.error(f"🔴 FAKE NEWS\nConfidence: {confidence:.2f}%")
+
